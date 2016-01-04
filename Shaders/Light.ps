@@ -1,0 +1,31 @@
+#version 400
+
+in vec2 texCoord;
+in vec3 normal;
+
+out vec4 outputColor;
+
+uniform sampler2D shaderTexture;
+uniform vec3 lightDirection;
+uniform vec4 diffuseLightColor;
+uniform vec4 ambientLight;
+
+void main(void)
+{
+	vec4 textureColor;
+	vec3 lightDir;
+	float lightIntensity;
+	vec4 color;
+
+	textureColor = texture(shaderTexture, texCoord);
+	ambientLight.xyzw = vec4(1.0, 1.0, 1.0, 1.0);
+	color = ambientLight;
+
+	lightDir = -lightDirection;
+	lightIntensity = clamp(dot(normal, lightDir), 0, 1);
+	if (lightIntensity > 0)
+		color += (diffuseLightColor*lightIntensity);
+	color = clamp(color, 0, 1);
+
+	outputColor = color*textureColor;
+}
